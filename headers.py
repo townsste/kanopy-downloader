@@ -1,0 +1,1 @@
+REPLACE THIS! Play a video on kanopy, search for plays in traffic manager, copy that as CURL (bash), paste into https://curlconverter.com/, copy BOTH headers and json_data into this python file, nothing else
