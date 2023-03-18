@@ -31,7 +31,7 @@ assert len(kid) == 32 and not isinstance(kid, bytes), "wrong KID length"
 pssh = format(get_pssh(kid).decode('utf-8'))
 json_data = {
     'license': 'https://wv-keyos.licensekeyserver.com/',  # Set the license URL
-    'headers': f'customdata: {drmkey}',
+    'headers': f"customdata: {drmkey['authXml']}",
     'pssh': f'{pssh}',
     'buildInfo': '',
     'proxy': '',
