@@ -7,7 +7,7 @@ import base64
 import os
 import urllib.request
 
-folder_path = f"E:\MEOW"  # Make this a valid path to a folder
+folder_path = f"ADDHERE"  # Make this a valid path to a folder
 
 response = requests.post('https://www.kanopy.com/kapi/plays', headers=headers, json=json_data)
 videoinfo = json.loads(response.text)
