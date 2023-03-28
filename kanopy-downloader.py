@@ -7,20 +7,27 @@ import base64
 import os
 import urllib.request
 
-folder_path = f"ADDHERE"  # Make this a valid path to a folder
+folder_path = f"E:\MEOW"  # Make this a valid path to a folder
 
 response = requests.post('https://www.kanopy.com/kapi/plays', headers=headers, json=json_data)
 videoinfo = json.loads(response.text)
-print(videoinfo)
+subtitles = videoinfo["captions"][0]["files"][1]["url"]
+
 video_id = json_data['videoId']
 r = requests.get(f'https://www.kanopy.com/kapi/videos/{video_id}', headers=headers, json=json_data)
 video_information = json.loads(r.text)
 title = video_information['video']['title']
 year = video_information['video']['productionYear']
 name = f'{title} {year}'
-print(videoinfo)
+print(name)
 dest_dir = f"{folder_path}/{name}"
+def getsubs():
+    subtitles = videoinfo["captions"][0]["files"][1]["url"]
+    response = requests.get(subtitles)
+    with open(f"{dest_dir}/{name}.{letters}.srt", "wb") as f:
+        f.write(response.content)
 try:
+    # checks if video is DRM protected
     if 'manifests' in videoinfo and len(videoinfo['manifests']) > 1 and 'url' in videoinfo['manifests'][1]:
         manifesturl = videoinfo['manifests'][1]['url']
         drmkey = videoinfo['manifests'][1]['kanopyDrm']
@@ -80,9 +87,7 @@ try:
                 if videoinfo["captions"] == []:
                     print("no subtitles")
                 else:
-                    response = requests.get(subtitles)
-                    with open(f"{dest_dir}/{name}.{letters}.srt", "wb") as f:
-                        f.write(response.content)
+                    getsubs()
             elif re.match(regex_pattern, filename):
                 # Extract the language code from the file name
                 # Run shaka-packager to decrypt the audio file
@@ -93,10 +98,9 @@ try:
                 if videoinfo["captions"] == []:
                     print("no subtitles")
                 else:
-                    response = requests.get(subtitles)
-                    with open(f"{dest_dir}/{name}.{letters}.srt", "wb") as f:
-                        f.write(response.content)
+                    getsubs()
     else:
+        print('video is not DRM protected')
         manifesturl = videoinfo['manifests'][0]['url']
         os.system(fr'N_m3u8DL-RE "{manifesturl}" --auto-select --save-name "{name}" --auto-select --save-dir "{dest_dir}" --tmp-dir {folder_path}/temp')
 except KeyError:
